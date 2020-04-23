@@ -2,8 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+
+
 
 from profiles_api import serializers
+from profiles_api import models, permissions
 
 ## this will be the endpoint where the urls.py file will reference and call to output
 ## so much potential!
@@ -91,6 +95,16 @@ class HelloViewSet(viewsets.ViewSet):
     def partial_update(self,request,pk=None):
         """Handle update part of an object"""
         return Response({'http_method': 'PATCH'})
+
     def destroy(self, request, pk=None):
         """Handle removing an object"""
         return Response({'http_method':'DELETE'})
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """handle creating updating profile"""
+    serializer_class = serializers.UserProfileSerializer
+    # default set on the queries to run with the db to register a user in it.
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (permissions.UpdateOwnProfile, )
+    
